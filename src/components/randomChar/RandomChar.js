@@ -1,6 +1,6 @@
 import { Component } from 'react';
-import Spinner from '../spinner/Spinner'
 import MarvelService from '../../services/MarvelService';
+import Spinner from '../spinner/Spinner'
 import ErrorMessage from '../errorMessage/errorMessage';
 
 import './randomChar.scss';
@@ -17,7 +17,7 @@ class RandomChar extends Component {
 
     componentDidMount () {
         this.updateChar();
-        //const timerId = setInterval(this.updateChar, 3000);
+        //const timerId = setInterval(this.updateChar, 300); 
     }
 
     componentDidUpdate () {
@@ -27,7 +27,8 @@ class RandomChar extends Component {
     onCharLoaded = (char) => {
         this.setState({
             char, 
-            loading: false
+            loading: false,
+            error: false
         })
     }
 
@@ -43,7 +44,7 @@ class RandomChar extends Component {
         this.marvelService
             .getCharacter(id)
             .then(this.onCharLoaded)
-            .catch(this.onError)
+            .catch(this.onError)       
     }
 
     render() {
@@ -66,7 +67,7 @@ class RandomChar extends Component {
                         Or choose another one
                     </p>
                     <button className="button button__main">
-                        <div className="inner">try it</div>
+                        <div className="inner" onClick={this.updateChar}>try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
                 </div>
@@ -77,10 +78,14 @@ class RandomChar extends Component {
 
 const View = ({char}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
+    const imgWithNotAvailable = <img src={thumbnail} style={{objectFit: 'contain'}} alt="Random character" className="randomchar__img"/>
+    const imgWithNormalImage = <img src={thumbnail} alt="Random character" className="randomchar__img"/>
+    const heroImg = thumbnail.slice(44) === 'image_not_available.jpg' ?  imgWithNotAvailable : imgWithNormalImage
 
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" className="randomchar__img"/>
+            {/* <img src={thumbnail} style={{objectFit: 'contain'}} alt="Random character" className="randomchar__img"/> */}
+            {heroImg}
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">

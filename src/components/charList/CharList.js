@@ -1,12 +1,15 @@
 import { Component } from 'react';
 import MarvelService from '../../services/MarvelService';
+import Spinner from '../spinner/Spinner'
+import ErrorMessage from '../errorMessage/errorMessage';
 
 import './charList.scss';
-import abyss from '../../resources/img/abyss.jpg';
 
 class CharList extends Component {
     state = {
-        charList: []
+        charList: [],
+        loading: true,
+        error: false
     }
 
     marvelService = new MarvelService();
@@ -19,15 +22,22 @@ class CharList extends Component {
 
     onCharListLoaded = (charList) => {
         this.setState({
-            charList
+            charList,
+            loading: false,
+            error: false
         })
     }
 
     renderItem (arr) {
         const list = arr.map(item => {
+            let imgStyle = {'objectFit' : 'cover'};
+            if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+                imgStyle = {'objectFit' : 'contain'};
+            }
+            
             return (
-                <li className="char__item">
-                    <img src={item.thumbnail} alt={item.name}/>
+                <li className="char__item" key={item.id}>
+                    <img src={item.thumbnail} style={imgStyle} alt={item.name}/>
                     <div className="char__name">{item.name}</div>
                 </li>
             )
@@ -40,50 +50,25 @@ class CharList extends Component {
         )
     }
 
+    onError = () => {
+        this.setState({
+            loading: false,
+            error: true
+        })
+    }
+
     render() {
-        const {charList} = this.state;
+        const {charList, error, loading} = this.state;
         const items = this.renderItem(charList);
+        const errorMessage = error ? <ErrorMessage/> : null;
+        const spinner = loading ? <Spinner/> : null;
+        const content = !(loading || error) ? items : null;
+
         return (
             <div className="char__list">
-                {items}
-                {/* <ul className="char__grid">
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item char__item_selected">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                    <li className="char__item">
-                        <img src={abyss} alt="abyss"/>
-                        <div className="char__name">Abyss</div>
-                    </li>
-                </ul> */}
+                {content}
+                {errorMessage}
+                {spinner}
                 <button className="button button__main button__long">
                     <div className="inner">load more</div>
                 </button>

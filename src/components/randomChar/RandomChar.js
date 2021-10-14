@@ -66,8 +66,8 @@ class RandomChar extends Component {
                     <p className="randomchar__title">
                         Or choose another one
                     </p>
-                    <button className="button button__main">
-                        <div className="inner" onClick={this.updateChar}>try it</div>
+                    <button className="button button__main" onClick={this.updateChar}>
+                        <div className="inner">try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
                 </div>
@@ -78,14 +78,14 @@ class RandomChar extends Component {
 
 const View = ({char}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
-    const imgWithNotAvailable = <img src={thumbnail} style={{objectFit: 'contain'}} alt="Random character" className="randomchar__img"/>
-    const imgWithNormalImage = <img src={thumbnail} alt="Random character" className="randomchar__img"/>
-    const heroImg = thumbnail.slice(44) === 'image_not_available.jpg' ?  imgWithNotAvailable : imgWithNormalImage
+    let imgStyle = {'objectFit' : 'cover'};
+    if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+        imgStyle = {'objectFit' : 'contain'};
+    }
 
     return (
         <div className="randomchar__block">
-            {/* <img src={thumbnail} style={{objectFit: 'contain'}} alt="Random character" className="randomchar__img"/> */}
-            {heroImg}
+            <img src={thumbnail} style={imgStyle} alt="Random character" className="randomchar__img"/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">

@@ -53,33 +53,41 @@ class CharList extends Component {
         }))
     }
 
-/*     setCharRef = elem => {
-        this.active = elem;
+    charRefs = [];
+
+    setCharRef = elem => {
+        this.charRefs.push(elem);
     }
 
-    focused = () => {
-        if (this.active) {
-           this.active.focus();
-        }
-    } */
+    focused = (id) => {
+        this.charRefs.forEach(item => item.classList.remove('char__item_selected'))
+        this.charRefs[id].classList.add('char__item_selected');
+        this.charRefs[id].focus();
+    }
 
     renderItem (arr) {
-        const list = arr.map(item => {
+        const list = arr.map((item, i) => {
             let imgStyle = {'objectFit' : 'cover'};
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
                 imgStyle = {'objectFit' : 'contain'};
             }
-            /* const activeClass = "char__item char__item_selected";
-            const inactiveClass = "char__item";
-            let classes = this.state.active ? activeClass : inactiveClass; */
             
             return (
-                <li tabIndex={0} ref={this.setCharRef} className="char__item" key={item.id} 
-                onFocus={(e) => e.target.style.cssText = `box-shadow: 0 5px 20px #9F0013;
-                                                          transform: translateY(-8px);` }
-                onBlur={(e) => e.target.style.cssText = `box-shadow: none;
-                                                         transform: none;`}
-                onClick={() => this.props.onCharSelected(item.id)}>
+                <li 
+                    tabIndex={0} 
+                    ref={this.setCharRef} 
+                    className="char__item" 
+                    key={item.id} 
+                    onClick={() => {
+                        this.focused(i);
+                        this.props.onCharSelected(item.id)
+                    }}
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                            this.focused(i);
+                            this.props.onCharSelected(item.id)
+                        }
+                    }}>
                     <img src={item.thumbnail} style={imgStyle} alt={item.name}/>
                     <div className="char__name">{item.name}</div>
                 </li>

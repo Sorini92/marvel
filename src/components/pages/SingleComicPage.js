@@ -54,7 +54,10 @@ const View = ({comic}) => {
                 <p className="single-comic__descr">Language: {language}</p>
                 <div className="single-comic__price">{price}</div>
             </div>
-            <Link to="/comics" className="single-comic__back">Back to all</Link>
+            <div>
+                <Link to="/" className="single-comic__back">Back to characters</Link>
+                <Link to="/comics" className="single-comic__back">Back to all comics</Link>
+            </div>
         </div>
     )
 }

@@ -36,6 +36,7 @@ const useMarvelService = () => {
 
     const _transformCharacterByName = (char) => {
         return {
+            id: char.id,
             name: char.name,
             description: char.description,
             thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension

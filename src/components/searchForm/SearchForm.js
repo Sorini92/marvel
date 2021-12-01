@@ -1,64 +1,103 @@
-import { useEffect, useState } from 'react';
-import { Formik, Form, Field} from 'formik';
+import { useState } from 'react';
+import { Formik, Form, useField} from 'formik';
+import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
+import Spinner from '../spinner/Spinner'
 import useMarvelService from '../../services/MarvelService';
 
 import './searchForm.scss';
 
-//background: #5C5C5C;
-
-/* const Success = () => {
+const Success = (props) => {
     return (
         <div className="success">
-            There is! Visit page?
-            <button className="button button__secondary form__btn form__grey">
-                <div className="inner">TO PAGE</div>
-            </button>
+            There is! Visit {props.char.name} page?
+            <Link to={`/character/${props.char.id}`}>
+                <button className="button button__secondary form__btn form__grey">
+                    <div className="inner">TO PAGE</div>
+                </button>
+            </Link>
+            
         </div>
     )
-} */
+}
 
-/* const Warning = () => {
+const Warning = () => {
     return (
         <div className="warning">The character was not found. Check the name and try again</div>
     )
-} */
+}
+
+const SearchInput = ({...props}) => {
+    const [field, meta] = useField(props);
+    return (
+        <>
+            <input {...props} {...field}/>
+            {meta.touched && meta.error ? (
+                <div className="warning">{meta.error}</div>
+            ) : null}
+        </>
+    )
+};
 
 const SearchForm = () => {
 
-    const [char, setChar] = useState('');
     const [objChar, setObjChar] = useState({});
+    const [error, setError] = useState(false);
 
-    const {getCharacterByName} = useMarvelService();
+    const {loading, getCharacterByName} = useMarvelService();
 
-    const onRequest = (name) => {
-        getCharacterByName(name)
-            .then(res => setObjChar(res))
+    console.log(objChar)
+
+    const onCharLoaded = (char) => {
+        setObjChar(char);
     }
+
+    const onRequest = (char) => {
+        setError(false);
+        setObjChar({});
+        getCharacterByName(char)
+            .then(onCharLoaded)
+            .catch(onError)    
+    }
+
+    const onError = () => {
+        setError(true)
+    }
+
+    const spinner = loading ? <Spinner/> : null;
+    const errorMessage = error && typeof objChar.name === "undefined" ? <Warning/> : null;
+    const successMessage = !(typeof objChar.name === "undefined") && !error ? <Success char={objChar}/> : null;
 
     return (
         <Formik 
-            initialValues={{
-                name: ''
-            }}
+            initialValues={{name: ''}}
             validationSchema = {Yup.object({
                 name: Yup.string().required('This field is required')
             })}
-            onSubmit= {values => console.log(JSON.stringify(values, null, 2))}
+            onSubmit= {values => onRequest(values.name)}
         >
             <Form className="form">
-                <label className='form__label'>Or find a character by name:</label>
-                <div>
-                    <Field 
-                        value={char.name} 
-                        onChange={(e) => setChar(e.target.value)} 
-                        className="form__input" 
-                        name="name" 
-                        type="text" 
-                        placeholder="Enter name"/>
-                    <button onClick={() => onRequest(char)} type='submit' className="button button__main form__btn">
-                        <div className="inner">FIND</div>
-                    </button>
+                <label htmlFor='name' className='form__label'>Or find a character by name:</label>
+                <div className="form__dialog">
+                    <div>
+                        <SearchInput
+                            id="name"
+                            className="form__input" 
+                            name="name" 
+                            type="text" 
+                            placeholder="Enter name"
+                        />
+                    </div>
+                    <div>
+                        <button 
+                            type='submit' 
+                            className="button button__main form__btn">
+                            <div className="inner">FIND</div>
+                        </button>
+                    </div>
+                    {spinner}
+                    {errorMessage}
+                    {successMessage}
                 </div>
             </Form>
         </Formik>

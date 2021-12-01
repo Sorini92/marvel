@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Formik, Form, useField} from 'formik';
+import { Formik, Form, Field, ErrorMessage} from 'formik';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import Spinner from '../spinner/Spinner'
@@ -27,7 +27,7 @@ const Warning = () => {
     )
 }
 
-const SearchInput = ({...props}) => {
+/* const SearchInput = ({...props}) => {
     const [field, meta] = useField(props);
     return (
         <>
@@ -37,7 +37,7 @@ const SearchInput = ({...props}) => {
             ) : null}
         </>
     )
-};
+}; */
 
 const SearchForm = () => {
 
@@ -64,7 +64,7 @@ const SearchForm = () => {
         setError(true)
     }
 
-    const spinner = loading ? <Spinner/> : null;
+    const spinner = loading ? <Spinner width={'80px'} height={'80px'}/> : null;
     const errorMessage = error && typeof objChar.name === "undefined" ? <Warning/> : null;
     const successMessage = !(typeof objChar.name === "undefined") && !error ? <Success char={objChar}/> : null;
 
@@ -80,7 +80,7 @@ const SearchForm = () => {
                 <label htmlFor='name' className='form__label'>Or find a character by name:</label>
                 <div className="form__dialog">
                     <div>
-                        <SearchInput
+                        <Field
                             id="name"
                             className="form__input" 
                             name="name" 
@@ -95,6 +95,7 @@ const SearchForm = () => {
                             <div className="inner">FIND</div>
                         </button>
                     </div>
+                    <ErrorMessage name="name" className="warning" component="div" />
                     {spinner}
                     {errorMessage}
                     {successMessage}

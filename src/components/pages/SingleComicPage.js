@@ -7,11 +7,11 @@ import ErrorMessage from '../errorMessage/errorMessage';
 import AppBanner from "../appBanner/AppBanner";
 import './singleComicPage.scss';
 
-const SingleComicPage = (props) => {
+const SingleComicPage = ({dataType}) => {
     const {id} = useParams();
     const [data, setData] = useState(null);
 
-    const {loading, error, clearError} = useMarvelService();
+    const {loading, error, clearError, getComic, getCharacter} = useMarvelService();
 
     useEffect(() => {
         update();
@@ -19,8 +19,13 @@ const SingleComicPage = (props) => {
 
     const update = () => {
         clearError();
-        props.requestFunction(id)
-            .then(onLoaded)
+        switch (dataType) {
+            case 'comic':
+                getComic(id).then(onLoaded);
+                break;
+            case 'character':
+                getCharacter(id).then(onLoaded);
+        }
     }
 
     const onLoaded = (data) => {

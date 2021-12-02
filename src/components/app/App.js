@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
-
+import useMarvelService from '../../services/MarvelService';
 import AppHeader from "../appHeader/AppHeader";
 import Spinner from "../spinner/Spinner";
 
@@ -9,7 +9,11 @@ const MainPage = lazy (() => import('../pages/MainPage'));
 const ComicsPage = lazy (() => import('../pages/ComicsPage'));
 const SingleComicPage = lazy (() => import('../pages/SingleComicPage'));
 
+
+
 const App = () => {
+
+    const {getComic, getCharacter} = useMarvelService();
 
     return (
         <Router>
@@ -24,11 +28,11 @@ const App = () => {
                         <Route exact path="/comics">
                             <ComicsPage/>
                         </Route>
-                        <Route exact path="/comics/:comicId">
-                            <SingleComicPage/>
+                        <Route exact path="/comics/:id">
+                            <SingleComicPage requestFunction={getComic}/>
                         </Route>
-                        <Route exact path="/character/:charId">
-                            <SingleComicPage/>
+                        <Route exact path="/character/:id">
+                            <SingleComicPage requestFunction={getCharacter}/>
                         </Route>
                         <Route path='*'>
                             <Page404/>

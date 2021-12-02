@@ -46,8 +46,6 @@ const SearchForm = () => {
 
     const {loading, getCharacterByName} = useMarvelService();
 
-    console.log(objChar)
-
     const onCharLoaded = (char) => {
         setObjChar(char);
     }

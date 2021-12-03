@@ -57,7 +57,7 @@ const useMarvelService = () => {
         return {
             id: comics.id,
             title: comics.title,
-            description: comics.description || 'There is no description',
+            description: comics.description ? comics.description : 'There is no description',
             pageCount: comics.pageCount ? `${comics.pageCount} p.` : 'No information about the number of pages',
             thumbnail: comics.thumbnail.path + '.' + comics.thumbnail.extension,
             language: comics.textObjects.language || 'en-us',

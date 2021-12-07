@@ -88,7 +88,8 @@ const SearchForm = () => {
                     </div>
                     <div>
                         <button 
-                            type='submit' 
+                            type='submit'
+                            disabled={loading} 
                             className="button button__main form__btn">
                             <div className="inner">FIND</div>
                         </button>

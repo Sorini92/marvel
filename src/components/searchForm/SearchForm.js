@@ -1,106 +1,75 @@
-import { useState } from 'react';
-import { Formik, Form, Field, ErrorMessage} from 'formik';
-import { Link } from 'react-router-dom';
+import {useState} from 'react';
+import { Formik, Form, Field, ErrorMessage as FormikErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import Spinner from '../spinner/Spinner'
+import {Link} from 'react-router-dom';
+
 import useMarvelService from '../../services/MarvelService';
+import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './searchForm.scss';
 
-const Success = (props) => {
-    return (
-        <div className="success">
-            There is! Visit {props.char.name} page?
-            <Link to={`/character/${props.char.id}`}>
-                <button className="button button__secondary form__btn form__grey">
-                    <div className="inner">TO PAGE</div>
-                </button>
-            </Link>
-            
-        </div>
-    )
-}
-
-const Warning = () => {
-    return (
-        <div className="warning">The character was not found. Check the name and try again</div>
-    )
-}
-
-/* const SearchInput = ({...props}) => {
-    const [field, meta] = useField(props);
-    return (
-        <>
-            <input {...props} {...field}/>
-            {meta.touched && meta.error ? (
-                <div className="warning">{meta.error}</div>
-            ) : null}
-        </>
-    )
-}; */
-
 const SearchForm = () => {
-
-    const [objChar, setObjChar] = useState({});
-    const [error, setError] = useState(false);
-
-    const {loading, getCharacterByName} = useMarvelService();
+    const [char, setChar] = useState(null);
+    const {getCharacterByName, clearError, process, setProcess} = useMarvelService();
 
     const onCharLoaded = (char) => {
-        setObjChar(char);
+        setChar(char);
     }
 
-    const onRequest = (char) => {
-        setError(false);
-        setObjChar({});
-        getCharacterByName(char)
+    const updateChar = (name) => {
+        clearError();
+
+        getCharacterByName(name)
             .then(onCharLoaded)
-            .catch(onError)    
+            .then(() => setProcess('confirmed'))
     }
 
-    const onError = () => {
-        setError(true)
-    }
-
-    const spinner = loading ? <Spinner width={'80px'} height={'80px'}/> : null;
-    const errorMessage = error && typeof objChar.name === "undefined" ? <Warning/> : null;
-    const successMessage = !(typeof objChar.name === "undefined") && !error ? <Success char={objChar}/> : null;
+    const errorMessage = process === 'error' ? <div className="char__search-critical-error"><ErrorMessage /></div> : null;
+    const results = !char ? null : char.length > 0 ?
+                    <div className="char__search-wrapper">
+                        <div className="char__search-success">There is! Visit {char[0].name} page?</div>
+                        <Link to={`/characters/${char[0].id}`} className="button button__secondary">
+                            <div className="inner">To page</div>
+                        </Link>
+                    </div> : 
+                    <div className="char__search-error">
+                        The character was not found. Check the name and try again
+                    </div>;
 
     return (
-        <Formik 
-            initialValues={{name: ''}}
-            validationSchema = {Yup.object({
-                name: Yup.string().required('This field is required')
-            })}
-            onSubmit= {values => onRequest(values.name)}
-        >
-            <Form className="form">
-                <label htmlFor='name' className='form__label'>Or find a character by name:</label>
-                <div className="form__dialog">
-                    <div>
-                        <Field
-                            id="name"
-                            className="form__input" 
-                            name="name" 
-                            type="text" 
-                            placeholder="Enter name"
-                        />
-                    </div>
-                    <div>
+        <div className="char__search-form">
+            <Formik
+                initialValues = {{
+                    charName: ''
+                }}
+                validationSchema = {Yup.object({
+                    charName: Yup.string().required('This field is required')
+                })}
+                onSubmit = { ({charName}) => {
+                    updateChar(charName);
+                }}
+            >
+                <Form>
+                    <label className="char__search-label" htmlFor="charName">Or find a character by name:</label>
+                    <div className="char__search-wrapper">
+                        <Field 
+                            id="charName" 
+                            name='charName' 
+                            type='text' 
+                            placeholder="Enter name"/>
                         <button 
-                            type='submit'
-                            disabled={loading} 
-                            className="button button__main form__btn">
-                            <div className="inner">FIND</div>
+                            type='submit' 
+                            className="button button__main"
+                            disabled={process === 'loading'}>
+                            <div className="inner">find</div>
                         </button>
                     </div>
-                    <ErrorMessage name="name" className="warning" component="div" />
-                    {spinner}
-                    {errorMessage}
-                    {successMessage}
-                </div>
-            </Form>
-        </Formik>
+                    <FormikErrorMessage component="div" className="char__search-error" name="charName" />
+                </Form>
+            </Formik>
+            {results}
+            {errorMessage}
+        </div>
     )
 }
 

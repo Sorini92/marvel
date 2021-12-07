@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet";
-import ErrorMessage from "../errorMessage/errorMessage"
+import ErrorMessage from "../errorMessage/ErrorMessage"
 import { Link } from "react-router-dom"
 
 const Page404 = () => {

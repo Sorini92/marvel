@@ -30,7 +30,7 @@ const App = () => {
                         <Route exact path="/comics/:id">
                             <SinglePage Component={SingleComicLayout} dataType={'comic'}/>
                         </Route>
-                        <Route exact path="/character/:id">
+                        <Route exact path="/characters/:id">
                             <SinglePage Component={SingleCharacterLayout} dataType={'character'}/>
                         </Route>
                         <Route path='*'>

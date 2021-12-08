@@ -14,6 +14,7 @@ const SinglePage = ({dataType, Component}) => {
 
     useEffect(() => {
         update();
+        // eslint-disable-next-line
     }, [id]);
 
     const update = () => {

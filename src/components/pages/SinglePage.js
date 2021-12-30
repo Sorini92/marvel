@@ -9,7 +9,7 @@ import './singlePage.scss';
 const SinglePage = ({dataType, Component}) => {
     const {id} = useParams();
     const [data, setData] = useState(null);
-
+    
     const {clearError, getComic, getCharacter, process, setProcess} = useMarvelService();
 
     useEffect(() => {
